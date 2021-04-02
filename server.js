@@ -24,11 +24,17 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET,
     },
-    function verify(payload, done) {
+    async function verify(payload, done) {
       if (!payload) {
         return done(null, false);
       }
-      const user = userService.byId(payload._id);
+      let user;
+      try {
+        user = await userService.byId(payload._id);
+      } catch (err) {
+        console.log(err);
+        return done(null, false);
+      }
       if (!user) {
         return done(null, false);
       }
@@ -80,6 +86,7 @@ app.get(
   "/api/user/favourites",
   passport.authenticate("jwt", { session: false }),
   function (req, res) {
+    console.log(req.user);
     userService
       .getFavourites(req.user._id)
       .then((fav) => {

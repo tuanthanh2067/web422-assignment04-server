@@ -35,7 +35,7 @@ module.exports.connect = function () {
 };
 
 module.exports.byId = (id) => {
-  return User.findById(id);
+  return User.findById(id).exec();
 };
 
 module.exports.registerUser = function (userData) {
